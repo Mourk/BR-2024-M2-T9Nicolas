@@ -8,11 +8,11 @@ class Cactus(Obstacle):
 
     CACTUS = [
         (LARGE_CACTUS, 300),
-        (SMALL_CACTUS, 325), #adicionei a lista de cactos
+        (SMALL_CACTUS, 325),
     ]
-    def __init__(self): #removi "image" já que no terminal o erro indicava que não havia um diretório para imagem, adicionei a variável "cactus_pos"
+    def __init__(self):
         image, cactus_pos = self.CACTUS[random.randint(0, 1)]
-        self.type = random.randint(0, 2)
+        self.type = random.randint(0, 1)
         super().__init__(image, self.type)
 
         self.rect.y = cactus_pos

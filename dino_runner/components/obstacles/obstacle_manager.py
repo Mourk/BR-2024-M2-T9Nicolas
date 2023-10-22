@@ -10,7 +10,7 @@ class ObstacleManager:
 
     def update(self, game):
         if len(self.obstacles) == 0:
-            self.obstacles.append(random.choice([Cactus(), Bird()])) #Adicionei aleatóriedade nos obstáculos
+            self.obstacles.append(random.choice([Cactus(), Bird()]))
             
         for obstacle in self.obstacles:
             obstacle.update(game.game_speed, self.obstacles)
