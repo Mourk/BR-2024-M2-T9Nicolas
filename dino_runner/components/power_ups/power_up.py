@@ -1,7 +1,7 @@
 import random
 from pygame.sprite import Sprite
 
-from dino_runner.utils.constants import SCREEN_WIDTH
+from dino_runner.utils.constants import HEART, SCREEN_WIDTH
 
 
 class PowerUp(Sprite):
@@ -21,3 +21,7 @@ class PowerUp(Sprite):
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
+
+class ExtraLifePowerUp(PowerUp):
+    def __init__(self):
+        super().__init__(HEART, "extra_life")

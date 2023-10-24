@@ -1,6 +1,7 @@
 import pygame
+from dino_runner.components.obstacles.clouds import Cloud
 
-from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE
+from dino_runner.utils.constants import BG, GAME_OVER, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
 from dino_runner.components.power_ups.power_up_manager import PowerUpManager
@@ -22,6 +23,7 @@ class Game:
         self.x_pos_bg = 0
         self.y_pos_bg = 380
         self.score = 0
+        self.clouds = []
         self.death_count = 0
 
         self.player = Dinosaur()
@@ -58,7 +60,22 @@ class Game:
         self.player.update(user_input)
         self.obstacle_manager.update(self)
         self.update_score()
+        self.update_clouds()
         self.power_up_manager.update(self)
+        
+        if self.player.has_hammer:
+            if pygame.time.get_ticks() - self.player.power_up_time >= 5000:
+                self.player.has_hammer = False
+                self.player.type = DEFAULT_TYPE
+
+    def update_clouds(self):
+        if not self.clouds or self.clouds[-1].rect.x <= SCREEN_WIDTH - 800:
+            self.clouds.append(Cloud())
+
+        for cloud in self.clouds:
+            cloud.update(self.game_speed)
+            if cloud.rect.x < -cloud.rect.width:
+                self.clouds.remove(cloud)
 
     def update_score(self):
         self.score += 1
@@ -75,6 +92,8 @@ class Game:
         self.obstacle_manager.draw(self.screen)
         self.power_up_manager.draw(self.screen)
         self.draw_power_up_time()
+        for cloud in self.clouds:
+            cloud.draw(self.screen)
         pygame.display.update()
         pygame.display.flip()
 
@@ -101,12 +120,17 @@ class Game:
     def record_death(self):
         if self.score > self.high_score:
             self.high_score = self.score
-        self.death_count += 1
+        self.death_count == 1
 
     def draw_text(self, message, center_pos, font_size=22):
         font = pygame.font.Font(FONT_STYLE, font_size)
         text = font.render(message, True, (0, 0, 0))
         self.screen.blit(text, text.get_rect(center=center_pos))
+
+    def game_over(self):
+        self.screen.blit(GAME_OVER, (SCREEN_WIDTH // 2 - GAME_OVER.get_width() // 2, SCREEN_HEIGHT // 2 - GAME_OVER.get_height() // 2))
+        pygame.display.update()
+        pygame.time.wait(2000)
 
     def draw_score(self):
         self.draw_text(f"Score: {self.score}", (1000, 60))
@@ -119,6 +143,10 @@ class Game:
             else:
                 self.player.has_power_up = False
                 self.player.type = DEFAULT_TYPE
+
+    def generate_clouds(self):
+         if len(self.clouds) == 0 or self.clouds[-1].rect.x <= SCREEN_WIDTH - 800:
+            self.clouds.append(Cloud())
 
     def reset_game(self):
         self.score = 0
